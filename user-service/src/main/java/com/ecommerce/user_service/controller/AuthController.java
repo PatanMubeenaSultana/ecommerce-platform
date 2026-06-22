@@ -1,5 +1,7 @@
 package com.ecommerce.user_service.controller;
 
+import com.ecommerce.user_service.dto.LoginRequest;
+import com.ecommerce.user_service.dto.LoginResponse;
 import com.ecommerce.user_service.dto.RegisterRequest;
 import com.ecommerce.user_service.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,5 +18,11 @@ public class AuthController {
     public String register(@RequestBody RegisterRequest request) {
 
         return userService.registerUser(request);
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody LoginRequest request) {
+
+        return userService.loginUser(request);
     }
 }
