@@ -13,8 +13,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public String register(
-            @RequestBody RegisterRequest request) {
+    public String register(@RequestBody RegisterRequest request) {
 
         return userService.registerUser(request);
     }

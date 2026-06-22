@@ -25,4 +25,8 @@ public class User {
     private String email;
 
     private String password;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 }
