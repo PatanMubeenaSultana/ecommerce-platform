@@ -5,6 +5,7 @@ import com.ecommerce.user_service.dto.LoginResponse;
 import com.ecommerce.user_service.dto.RegisterRequest;
 import com.ecommerce.user_service.entity.Role;
 import com.ecommerce.user_service.entity.User;
+import com.ecommerce.user_service.exception.UserAlreadyExistsException;
 import com.ecommerce.user_service.repository.RoleRepository;
 import com.ecommerce.user_service.repository.UserRepository;
 import com.ecommerce.user_service.security.JwtService;
@@ -25,7 +26,7 @@ public class UserService {
     public String registerUser(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return "Email already exists";
+            throw new UserAlreadyExistsException("Email already exists");
         }
 
         Role customerRole = roleRepository.findByName("CUSTOMER")
