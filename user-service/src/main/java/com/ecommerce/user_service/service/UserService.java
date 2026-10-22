@@ -3,6 +3,7 @@ package com.ecommerce.user_service.service;
 import com.ecommerce.user_service.dto.LoginRequest;
 import com.ecommerce.user_service.dto.LoginResponse;
 import com.ecommerce.user_service.dto.RegisterRequest;
+import com.ecommerce.user_service.dto.UserResponse;
 import com.ecommerce.user_service.entity.Role;
 import com.ecommerce.user_service.entity.User;
 import com.ecommerce.user_service.exception.UserAlreadyExistsException;
@@ -10,6 +11,8 @@ import com.ecommerce.user_service.repository.RoleRepository;
 import com.ecommerce.user_service.repository.UserRepository;
 import com.ecommerce.user_service.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -64,5 +67,26 @@ public class UserService {
                 jwtService.generateToken(user.getEmail());
 
         return new LoginResponse(token);
+    }
+
+    public UserResponse getProfile(){
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+        return mapToUserResponse(user);
+    }
+
+    private UserResponse mapToUserResponse(User user){
+        UserResponse response = new UserResponse();
+
+        response.setId(user.getId());
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
+        response.setEmail(user.getEmail());
+        response.setRole(user.getRole().getName());
+
+        return response;
     }
 }
