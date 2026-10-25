@@ -1,6 +1,7 @@
 package com.ecommerce.user_service.security;
 
 import com.ecommerce.user_service.service.CustomUserDetailsService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,32 +45,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt =
                 authHeader.substring(7);
 
-        String email =
-                jwtService.extractUsername(jwt);
+        try {
+            String email =
+                    jwtService.extractUsername(jwt);
 
-        if (email != null &&
-                SecurityContextHolder.getContext()
-                        .getAuthentication() == null) {
+            if (email != null &&
+                    SecurityContextHolder.getContext()
+                            .getAuthentication() == null) {
 
-            UserDetails userDetails =
-                    userDetailsService
-                            .loadUserByUsername(email);
+                UserDetails userDetails =
+                        userDetailsService
+                                .loadUserByUsername(email);
 
-            if (jwtService.isTokenValid(jwt, email)) {
+                if (jwtService.isTokenValid(jwt, email)) {
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities());
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities());
 
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource()
-                                .buildDetails(request));
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request));
 
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authToken);
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authToken);
+                }
             }
+        } catch( JwtException | IllegalArgumentException e){
+            SecurityContextHolder.clearContext();
+            response.sendError(
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    "Invalid or expired JWT token");
+            return;
         }
 
         filterChain.doFilter(request, response);
