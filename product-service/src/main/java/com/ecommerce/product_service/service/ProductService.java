@@ -1,6 +1,7 @@
 package com.ecommerce.product_service.service;
 
 import com.ecommerce.product_service.entity.Product;
+import com.ecommerce.product_service.exception.ProductNotFoundException;
 import com.ecommerce.product_service.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class ProductService {
 
     public Product getProductById(Long productId) {
         return productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new ProductNotFoundException(
                         "Product not found with id: " + productId));
     }
 
