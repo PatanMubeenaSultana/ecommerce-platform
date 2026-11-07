@@ -2,6 +2,7 @@ package com.ecommerce.product_service.controller;
 
 import com.ecommerce.product_service.entity.Product;
 import com.ecommerce.product_service.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping
-    public Product addProduct(@RequestBody Product product) {
+    public Product addProduct(@Valid @RequestBody Product product) {
         return productService.addProduct(product);
     }
 
@@ -37,7 +38,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public Product updateproduct(@PathVariable Long productId, @RequestBody Product product){
+    public Product updateproduct(@PathVariable Long productId, @Valid @RequestBody Product product){
         return productService.updateProduct(productId, product);
     }
 }
