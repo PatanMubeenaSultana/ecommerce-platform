@@ -1,9 +1,7 @@
 package com.ecommerce.user_service.service;
 
-import com.ecommerce.user_service.dto.LoginRequest;
-import com.ecommerce.user_service.dto.LoginResponse;
-import com.ecommerce.user_service.dto.RegisterRequest;
-import com.ecommerce.user_service.dto.UserResponse;
+import com.ecommerce.user_service.client.ProductClient;
+import com.ecommerce.user_service.dto.*;
 import com.ecommerce.user_service.entity.Role;
 import com.ecommerce.user_service.entity.User;
 import com.ecommerce.user_service.exception.UserAlreadyExistsException;
@@ -25,6 +23,8 @@ public class UserService {
 
     private final RoleRepository roleRepository;
     private final JwtService jwtService;
+
+    private final ProductClient productClient;
 
     public String registerUser(RegisterRequest request) {
 
@@ -88,5 +88,9 @@ public class UserService {
         response.setRole(user.getRole().getName());
 
         return response;
+    }
+
+    public ProductResponse getProductDetails(Long productId) {
+        return productClient.getProductById(productId);
     }
 }
