@@ -1,7 +1,10 @@
 package com.ecommerce.user_service.exception;
 
 import com.ecommerce.user_service.response.ApiResponse;
+import feign.FeignException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +47,20 @@ public class GlobalExceptionHandler {
                 false,
                 ex.getMessage(),
                 null
+        );
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ApiResponse<String>> handleFeignException(FeignException ex){
+
+        HttpStatusCode status = HttpStatusCode.valueOf(ex.status());
+
+        return ResponseEntity.status(status).body(
+                new ApiResponse<>(
+                        false,
+                        "Product service request failed",
+                        ex.contentUTF8()
+                )
         );
     }
 }
