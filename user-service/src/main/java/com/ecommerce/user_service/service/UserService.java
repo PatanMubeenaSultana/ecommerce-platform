@@ -4,10 +4,12 @@ import com.ecommerce.user_service.client.ProductClient;
 import com.ecommerce.user_service.dto.*;
 import com.ecommerce.user_service.entity.Role;
 import com.ecommerce.user_service.entity.User;
+import com.ecommerce.user_service.exception.ProductServiceUnavailableException;
 import com.ecommerce.user_service.exception.UserAlreadyExistsException;
 import com.ecommerce.user_service.repository.RoleRepository;
 import com.ecommerce.user_service.repository.UserRepository;
 import com.ecommerce.user_service.security.JwtService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -90,7 +92,21 @@ public class UserService {
         return response;
     }
 
+    @CircuitBreaker(
+            name = "productService",
+            fallbackMethod = "productServiceFallback"
+    )
     public ProductResponse getProductDetails(Long productId) {
         return productClient.getProductById(productId);
+    }
+
+    public ProductResponse productServiceFallback(Long productId, Throwable ex){
+
+        System.out.println("Product Service is unavailable. Fallback executed");
+
+
+        throw new ProductServiceUnavailableException(
+                "Product service is currently unavailable. Please try again later."
+        );
     }
 }
