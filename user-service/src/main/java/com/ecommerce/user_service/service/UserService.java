@@ -10,6 +10,7 @@ import com.ecommerce.user_service.repository.RoleRepository;
 import com.ecommerce.user_service.repository.UserRepository;
 import com.ecommerce.user_service.security.JwtService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -92,9 +93,12 @@ public class UserService {
         return response;
     }
 
-    @CircuitBreaker(
+    @Retry(
             name = "productService",
             fallbackMethod = "productServiceFallback"
+    )
+    @CircuitBreaker(
+            name = "productService"
     )
     public ProductResponse getProductDetails(Long productId) {
         return productClient.getProductById(productId);
